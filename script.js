@@ -60,6 +60,7 @@ const accounts = [account1, account2];
 const labelWelcome = document.querySelector('.welcome');
 const labelDate = document.querySelector('.date');
 const labelBalance = document.querySelector('.balance__value');
+const labelMonth = document.querySelector('.summary__label--month');
 const labelSumIn = document.querySelector('.summary__value--in');
 const labelSumOut = document.querySelector('.summary__value--out');
 const labelSumInterest = document.querySelector('.summary__value--interest');
@@ -137,11 +138,6 @@ const formatCur = (value, currency, locale) => {
   return new Intl.NumberFormat(locale, options).format(value);
 };
 
-/**
- * TODO:
- * - deposit -> 収入, withdrawal -> 支出
- * <div class="movements__type movements__type--deposit">2 deposit</div>
- */
 /**
  * HTML文を作成して所定の場所に挿入する、ソート機能あり
  * - HTML
@@ -360,6 +356,39 @@ let currentAccount = account1;
 updateUI(currentAccount);
 containerApp.style.opacity = 100;
 
+/**
+ * 現在日時から指定された形式の日時と日付を出力
+ * @function
+ * @param {Object.<string>} option
+ * @param {string} el
+ */
+const formattedDateFormat = (option, el) => {
+  const now = new Date();
+  el.textContent = new Intl.DateTimeFormat('jp-JP', option).format(now);
+};
+
+// グローバルの処理
+// 1秒毎に現在時刻を更新する
+setInterval(() => {
+  const options1 = {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: false,
+  };
+  formattedDateFormat(options1, labelDate);
+}, 1000);
+
+// summaryの欄に今月の月を表示させる
+const options2 = {
+  month: 'numeric',
+};
+// labelMonth.textContent = '12月';
+formattedDateFormat(options2, labelMonth);
+
 // login
 btnLogin.addEventListener('click', e => {
   e.preventDefault();
@@ -374,24 +403,6 @@ btnLogin.addEventListener('click', e => {
     labelWelcome.textContent = welcomeMsg;
 
     containerApp.style.opacity = 100;
-
-    // 1秒毎に現在時刻を更新する
-    setInterval(() => {
-      const now = new Date();
-      const options = {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'numeric',
-        hour12: false,
-      };
-      labelDate.textContent = new Intl.DateTimeFormat(
-        curUser.locale,
-        options
-      ).format(now);
-    }, 1000);
 
     // clear input field
     // blur input fieldからフォーカスを失う
@@ -424,7 +435,7 @@ btnLogin.addEventListener('click', e => {
  * <input type="number" class="form__input form__input--amount" />
   　<input type="text" class="form__input form__input--memo" />
  */
-// transfer
+// income
 btnTransfer.addEventListener('click', e => {
   e.preventDefault();
 

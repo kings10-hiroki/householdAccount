@@ -183,6 +183,11 @@ nav {
   margin-right: 0.8rem;
 }
 
+.summary__label--month {
+  font-size: 1.8rem;
+  margin-right: 0.8rem;
+}
+
 .summary__value {
   font-size: 2.2rem;
   margin-right: 2.5rem;

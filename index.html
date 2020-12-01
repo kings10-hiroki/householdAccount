@@ -12,7 +12,7 @@
     />
 
     <link rel="stylesheet" href="style.css" />
-    <title>Bankist</title>
+    <title>Household Booker</title>
   </head>
   <body>
     <!-- TOP NAVIGATION -->
@@ -66,6 +66,7 @@
 
       <!-- SUMMARY -->
       <div class="summary">
+        <p class="summary__label--month">10月</p>
         <p class="summary__label">収入</p>
         <p class="summary__value summary__value--in">0000€</p>
         <p class="summary__label">支出</p>
@@ -76,14 +77,19 @@
       </div>
 
       <!-- OPERATION: TRANSFERS -->
-      <!-- * TODO: * - 
-      金額
-      備考 -->
       <div class="operation operation--transfer">
         <h2>収入</h2>
         <form class="form form--transfer">
           <input type="number" class="form__input form__input--amount" />
-          <input type="text" class="form__input form__input--memo" />
+          <!-- <input type="text" class="form__input form__input--memo" /> -->
+          <select
+            name="memo"
+            class="form__input form__input--memo"
+            id="income-memo"
+          >
+            <option value="salary">給料</option>
+            <option value="other">その他</option>
+          </select>
           <button class="form__btn form__btn--transfer">&rarr;</button>
           <label class="form__label">金額</label>
           <label class="form__label">memo</label>
@@ -91,16 +97,24 @@
       </div>
 
       <!-- OPERATION: LOAN -->
-      <!-- * TODO: * - backgroundColor yellow
-      金額
-      備考のinput欄を設ける
-      grid-template-columns: 2.5fr 2.5fr 1fr;
-    -->
       <div class="operation operation--loan">
         <h2>支出</h2>
         <form class="form form--loan">
           <input type="number" class="form__input form__input--outgo--amount" />
-          <input type="text" class="form__input form__input--outgo--memo" />
+          <!-- <input type="text" class="form__input form__input--outgo--memo" /> -->
+          <select
+            name="memo"
+            class="form__input form__input--memo"
+            id="outgo-memo"
+          >
+            <option value="meal">食費</option>
+            <option value="fixed">固定費</option>
+            <option value="utility">水道光熱費</option>
+            <option value="communication">通信費</option>
+            <option value="traffic">交通費</option>
+            <option value="date">交際費</option>
+            <option value="other">その他</option>
+          </select>
           <button class="form__btn form__btn--loan">&rarr;</button>
           <label class="form__label">金額</label>
           <label class="form__label">memo</label>
