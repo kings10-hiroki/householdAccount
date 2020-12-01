@@ -9,6 +9,10 @@
 
 // DIFFERENT DATA! Contains movement dates, currency and locale
 
+/**
+ * TODO:
+ * - 備考のキーを作る
+ */
 const account1 = {
   owner: 'Jonas Schmedtmann',
   movements: [200, 455.23, -306.5, 25000, -642.21, -133.9, 79.97, 1300],
@@ -340,7 +344,7 @@ const startLogOutTimer = () => {
        * TODO:
        * - 開発を終えたら0->100にする
        */
-      containerApp.style.opacity = 0;
+      containerApp.style.opacity = 100;
     }
     time--;
   };
@@ -400,6 +404,10 @@ btnLogin.addEventListener('click', e => {
       [inputLoginUsername, inputLoginPin]
     );
 
+    /**
+     * TODO:
+     * - よくわからないからもう一度動画をみる
+     */
     if (timer) clearInterval(timer);
     timer = startLogOutTimer();
 
@@ -412,6 +420,14 @@ btnLogin.addEventListener('click', e => {
   }
 });
 
+/**
+ * TODO:
+ * - 収入の入力
+ * transfer to の代わりに備考
+ * - 下記に変更あり
+ * <input type="number" class="form__input form__input--amount" />
+  　<input type="text" class="form__input form__input--memo" />
+ */
 // transfer
 btnTransfer.addEventListener('click', e => {
   e.preventDefault();
@@ -453,6 +469,14 @@ btnTransfer.addEventListener('click', e => {
   }
 });
 
+/**
+ * TODO:
+ * - 支出の入力
+ * 備考の欄を新たに設ける
+ * - 下記に変更あり
+ * <input type="number" class="form__input form__input--outgo--amount" />
+  　<input type="text" class="form__input form__input--outgo--memo" />
+ */
 // loan
 btnLoan.addEventListener('click', e => {
   e.preventDefault();

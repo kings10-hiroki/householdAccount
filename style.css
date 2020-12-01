@@ -214,11 +214,11 @@ nav {
 }
 
 .operation--transfer {
-  background-image: linear-gradient(to top left, #ffb003, #ffcb03);
+  background-image: linear-gradient(to top left, #39b385, #9be15d);
 }
 
 .operation--loan {
-  background-image: linear-gradient(to top left, #39b385, #9be15d);
+  background-image: linear-gradient(to top left, #ffb003, #ffcb03);
 }
 
 .operation--close {
@@ -241,7 +241,7 @@ h2 {
 
 /* Exceptions for interst */
 .form.form--loan {
-  grid-template-columns: 2.5fr 1fr 2.5fr;
+  grid-template-columns: 2.5fr 2.5fr 1fr;
 }
 .form__label--loan {
   grid-row: 2;
