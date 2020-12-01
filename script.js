@@ -99,10 +99,6 @@ const inputClosePin = document.querySelector('.form__input--pin');
  * @param {string} locale
  * @return {string}
  */
-/**
- * TODO:
- * - 備考の日付の形式を日本語にする
- */
 const formatMovementDate = (date, locale) => {
   /**
    * date2 - date1の日数を計算する
@@ -116,9 +112,9 @@ const formatMovementDate = (date, locale) => {
 
   const daysPassed = calcDaysPassed(date, new Date());
 
-  if (daysPassed === 0) return 'Today';
-  if (daysPassed === 1) return 'Yesterday';
-  if (daysPassed <= 7) return `${daysPassed} days ago`;
+  if (daysPassed === 0) return '本日';
+  if (daysPassed === 1) return '昨日';
+  if (daysPassed <= 7) return `${daysPassed} 日後`;
 
   // ex) locale:'ja-JP' -> yyyy/mm/dd
   return new Intl.DateTimeFormat(locale).format(date);
@@ -171,7 +167,7 @@ const displayMovements = (acc, sort = false) => {
     : acc.movements;
 
   movs.forEach((mov, i) => {
-    const type = mov > 0 ? 'deposit' : 'withdrawal';
+    const type = mov > 0 ? 'income' : 'outgo';
 
     const date = new Date(acc.movementsDates[i]);
     const displayDate = formatMovementDate(date, acc.locale);
@@ -180,9 +176,9 @@ const displayMovements = (acc, sort = false) => {
 
     const html = `
     <div class="movements__row">
-      <div class="movements__type movements__type--${type}">${
-      i + 1
-    } ${type.toUpperCase()}</div>
+      <div class="movements__type movements__type--${type}">${i + 1} ${
+      type === 'income' ? '収入' : '支出'
+    }</div>
       <div class="movements__date">${displayDate}</div>
       <div class="movements__value">${formattedMov}</div>
     </div>
