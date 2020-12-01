@@ -152,6 +152,13 @@ nav {
   text-transform: uppercase;
   font-weight: 500;
   color: #666;
+  margin-right: 2rem;
+}
+
+.movements__memo {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #666;
 }
 
 .movements__type--income {

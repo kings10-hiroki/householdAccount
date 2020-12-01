@@ -9,10 +9,6 @@
 
 // DIFFERENT DATA! Contains movement dates, currency and locale
 
-/**
- * TODO:
- * - 備考のキーを作る
- */
 const account1 = {
   owner: 'Jonas Schmedtmann',
   movements: [200, 455.23, -306.5, 25000, -642.21, -133.9, 79.97, 1300],
@@ -28,6 +24,16 @@ const account1 = {
     '2020-11-27T17:01:17.194Z',
     '2020-11-29T10:36:17.929Z',
     '2020-11-30T10:51:36.790Z',
+  ],
+  memo: [
+    '給料',
+    'その他',
+    '食費',
+    '給料',
+    '固定費',
+    '水道光熱費',
+    'その他',
+    '給料',
   ],
   currency: 'JPY',
   locale: 'ja-JP', // de-DE
@@ -77,9 +83,10 @@ const btnSort = document.querySelector('.btn--sort');
 
 const inputLoginUsername = document.querySelector('.login__input--user');
 const inputLoginPin = document.querySelector('.login__input--pin');
-const inputTransferTo = document.querySelector('.form__input--to');
-const inputTransferAmount = document.querySelector('.form__input--amount');
-const inputLoanAmount = document.querySelector('.form__input--loan-amount');
+const inputIncomeMemo = document.querySelector('.form__input--memo');
+const inputIncomeAmount = document.querySelector('.form__input--amount');
+const inputOutgoAmount = document.querySelector('.form__input--outgo--amount');
+const inputOutgoMemo = document.querySelector('.form__input--outgo--memo');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
@@ -142,8 +149,9 @@ const formatCur = (value, currency, locale) => {
  * HTML文を作成して所定の場所に挿入する、ソート機能あり
  * - HTML
  * <div class="movements__row">
- *  <div class="movements__type movements__type--deposit">2 deposit</div>
+ *  <div class="movements__type movements__type--income">2 収入</div>
  *  <div class="movements__date">3 days ago</div>
+ *  <div class="movements__memo">給料</div>
  *  <div class="movements__value">4 000€</div>
  * </div>
  * - 所定の場所
@@ -176,6 +184,7 @@ const displayMovements = (acc, sort = false) => {
       type === 'income' ? '収入' : '支出'
     }</div>
       <div class="movements__date">${displayDate}</div>
+      <div class="movements__memo">${acc.memo[i]}</div>
       <div class="movements__value">${formattedMov}</div>
     </div>
     `;
@@ -311,10 +320,10 @@ const clearBlurInput = (inputEl, blurEl) => {
 
   // ex)
   // - clear input field
-  // inputTransferAmount.value = '';
+  // inputIncomeAmount.value = '';
   // inputTransferTo.value = '';
   // - blur input field
-  // inputTransferAmount.blur();
+  // inputIncomeAmount.blur();
   // inputTransferTo.blur();
 };
 
@@ -365,6 +374,30 @@ containerApp.style.opacity = 100;
 const formattedDateFormat = (option, el) => {
   const now = new Date();
   el.textContent = new Intl.DateTimeFormat('jp-JP', option).format(now);
+};
+
+/**
+ * プルダウンで選択されたvalueについて日本語のvalueを割り当てる
+ * @function
+ * @param {string} inputMemo optionのvalueに設定されている値
+ */
+const convertSelectVal = inputMemo => {
+  const obj = {
+    salary: '給料',
+    meal: '食費',
+    fixed: '固定費',
+    utility: '水道光熱費',
+    communication: '通信費',
+    traffic: '交通費',
+    date: '交際費',
+    other: 'その他',
+  };
+  // if プロパティの存在を調べる
+  if (obj.hasOwnProperty(inputMemo)) {
+    return obj[inputMemo];
+  } else {
+    return false;
+  }
 };
 
 // グローバルの処理
@@ -427,52 +460,45 @@ btnLogin.addEventListener('click', e => {
   }
 });
 
-/**
- * TODO:
- * - 収入の入力
- * transfer to の代わりに備考
- * - 下記に変更あり
- * <input type="number" class="form__input form__input--amount" />
-  　<input type="text" class="form__input form__input--memo" />
- */
 // income
 btnTransfer.addEventListener('click', e => {
   e.preventDefault();
 
   // get inputValue 'Amount'
-  const inputAmount = Number(inputTransferAmount.value);
+  const inputAmount = Number(inputIncomeAmount.value);
 
   // find recipient account from 'Transfer to' inputValue
-  const recUser = accounts.find(acc => acc.username === inputTransferTo.value);
+  // const recUser = accounts.find(acc => acc.username === inputTransferTo.value);
+
+  // get inputValue 'memo'
+  // 'other'
+  let inputMemo = inputIncomeMemo.value;
+
+  // 'other' -> 'その他' 変換
+  inputMemo = convertSelectVal(inputMemo);
 
   // 入力されたusernameとamountの整合性の確認
   if (
     inputAmount > 0 &&
-    recUser &&
-    curUser.balance >= inputAmount &&
-    // - ?.  optional chaining演算子 nullまたはundefinedのときエラーを返すのではなくundefinedを返す
-    recUser?.username !== curUser.username
+    inputMemo &&
+    confirm(`金額:￥${inputAmount} memo:${inputMemo}でよろしいでしょうか？`)
   ) {
-    // Add negative movement to current user
-    // - '-'を先頭に付けることで負数にすることができる
-    curUser.movements.push(-inputAmount);
+    // Add movement to current user
+    curUser.movements.push(inputAmount);
 
-    // Add positive movement to recipient
-    recUser.movements.push(inputAmount);
+    // Add memo to current user
+    curUser.memo.push(inputMemo);
 
     // Add transfer date
     curUser.movementsDates.push(new Date().toISOString());
 
     // input clear & blur
-    clearBlurInput(
-      [inputTransferAmount, inputTransferTo],
-      [inputTransferAmount, inputTransferTo]
-    );
+    clearBlurInput([inputIncomeAmount], [inputIncomeAmount]);
 
     // update UI
     updateUI(curUser);
   } else {
-    alert('Input recipient and amount! or Invalid recipient and amount!');
+    alert('Confirm your amount and memo!');
   }
 });
 
@@ -484,32 +510,42 @@ btnTransfer.addEventListener('click', e => {
  * <input type="number" class="form__input form__input--outgo--amount" />
   　<input type="text" class="form__input form__input--outgo--memo" />
  */
-// loan
+// outgo
 btnLoan.addEventListener('click', e => {
   e.preventDefault();
 
-  // inputValue
-  const amount = Math.floor(inputLoanAmount.value);
+  // get inputValue 'Amount'
+  const inputAmount = Number(inputOutgoAmount.value);
 
-  // ローンの条件
-  // any deposit > 10% of request
-  // ex) deposit: 4000 > amount: 30000 * 10% -> OK!
-  if (amount > 0 && curUser.movements.some(mov => mov >= amount * 0.1)) {
-    setTimeout(() => {
-      // Add positive movement to recipient
-      curUser.movements.push(amount);
+  // get inputValue 'memo'
+  // 'other'
+  let inputMemo = inputOutgoMemo.value;
 
-      // Add loan date
-      curUser.movementsDates.push(new Date().toISOString());
+  // 'other' -> 'その他' 変換
+  inputMemo = convertSelectVal(inputMemo);
 
-      // input clear & blur
-      clearBlurInput([inputLoanAmount], [inputLoanAmount]);
+  // 入力されたusernameとamountの整合性の確認
+  if (
+    inputAmount > 0 &&
+    inputMemo &&
+    confirm(`金額:￥${inputAmount} memo:${inputMemo}でよろしいでしょうか？`)
+  ) {
+    // Add movement to current user
+    curUser.movements.push(-inputAmount);
 
-      // update UI
-      updateUI(curUser);
-    }, 3000);
+    // Add memo to current user
+    curUser.memo.push(inputMemo);
+
+    // Add loan date
+    curUser.movementsDates.push(new Date().toISOString());
+
+    // input clear & blur
+    clearBlurInput([inputOutgoAmount], [inputOutgoAmount]);
+
+    // update UI
+    updateUI(curUser);
   } else {
-    alert('Invalid amount. Confirm your input amount');
+    alert('Confirm your amount and memo!');
   }
 });
 
