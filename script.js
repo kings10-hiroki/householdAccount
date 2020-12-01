@@ -95,6 +95,10 @@ const inputClosePin = document.querySelector('.form__input--pin');
  * @param {string} locale
  * @return {string}
  */
+/**
+ * TODO:
+ * - 備考の日付の形式を日本語にする
+ */
 const formatMovementDate = (date, locale) => {
   /**
    * date2 - date1の日数を計算する
@@ -133,6 +137,11 @@ const formatCur = (value, currency, locale) => {
   return new Intl.NumberFormat(locale, options).format(value);
 };
 
+/**
+ * TODO:
+ * - deposit -> 収入, withdrawal -> 支出
+ * <div class="movements__type movements__type--deposit">2 deposit</div>
+ */
 /**
  * HTML文を作成して所定の場所に挿入する、ソート機能あり
  * - HTML
@@ -230,6 +239,10 @@ const calcPrintBalance = acc => {
  * @function
  * @param {Object.<number>} acc アカウントオブジェクト
  */
+/**
+ * TODO:
+ * - 利息合計の代わりに「収入－支出」の欄を設ける
+ */
 const calcDisplaySummary = acc => {
   // 利率
   const intRatePercent = acc.interestRate / 100;
@@ -309,6 +322,10 @@ const clearBlurInput = (inputEl, blurEl) => {
   // inputTransferTo.blur();
 };
 
+/**
+ * TODO:
+ * - 処理の内容がよくわからないから内容を把握する
+ */
 const startLogOutTimer = () => {
   const tick = () => {
     const min = String(Math.trunc(time / 60)).padStart(2, 0);
@@ -319,6 +336,10 @@ const startLogOutTimer = () => {
     if (time === 0) {
       clearInterval(timer);
       labelWelcome.textContent = 'Log in to get started';
+      /**
+       * TODO:
+       * - 開発を終えたら0->100にする
+       */
       containerApp.style.opacity = 0;
     }
     time--;
@@ -335,9 +356,9 @@ let curUser, timer;
  * - 開発を終えたら下記の{Fake always login}を削除
  */
 // Fake always login
-// let currentAccount = account1;
-// updateUI(currentAccount);
-// containerApp.style.opacity = 100;
+let currentAccount = account1;
+updateUI(currentAccount);
+containerApp.style.opacity = 100;
 
 // login
 btnLogin.addEventListener('click', e => {

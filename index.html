@@ -40,7 +40,7 @@
       <!-- BALANCE -->
       <div class="balance">
         <div>
-          <p class="balance__label">Current balance</p>
+          <p class="balance__label">収支出一覧</p>
           <p class="balance__date">
             As of <span class="date">05/03/2037</span>
           </p>
@@ -76,8 +76,11 @@
       </div>
 
       <!-- OPERATION: TRANSFERS -->
+      <!-- * TODO: * - backgroundColor green
+      金額
+      備考 -->
       <div class="operation operation--transfer">
-        <h2>Transfer money</h2>
+        <h2>収入</h2>
         <form class="form form--transfer">
           <input type="text" class="form__input form__input--to" />
           <input type="number" class="form__input form__input--amount" />
@@ -88,8 +91,12 @@
       </div>
 
       <!-- OPERATION: LOAN -->
+      <!-- * TODO: * - backgroundColor yellow
+      金額
+      備考のinput欄を設ける
+    -->
       <div class="operation operation--loan">
-        <h2>Request loan</h2>
+        <h2>支出</h2>
         <form class="form form--loan">
           <input type="number" class="form__input form__input--loan-amount" />
           <button class="form__btn form__btn--loan">&rarr;</button>
