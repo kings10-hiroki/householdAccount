@@ -11,7 +11,7 @@
 
 const account1 = {
   owner: 'Jonas Schmedtmann',
-  movements: [200, 455.23, -306.5, 25000, -642.21, -133.9, 79.97, 1300],
+  movements: [200, 455, -306, 25000, -642, -133, 79, 1300],
   interestRate: 1.2, // %
   pin: 1111,
 
@@ -21,9 +21,9 @@ const account1 = {
     '2020-01-28T09:15:04.904Z',
     '2020-04-01T10:17:24.185Z',
     '2020-05-08T14:11:59.604Z',
-    '2020-11-27T17:01:17.194Z',
-    '2020-11-29T10:36:17.929Z',
-    '2020-11-30T10:51:36.790Z',
+    '2020-11-01T17:01:17.194Z',
+    '2020-11-01T10:36:17.929Z',
+    '2020-11-01T10:51:36.790Z',
   ],
   memo: [
     '給料',
@@ -237,48 +237,55 @@ const calcPrintBalance = acc => {
 };
 
 /**
- * 口座金額の動きから以下を計算して、画面に出力させる
+ * 口座金額の動きから今月の以下を計算して、画面に出力させる
  * - 収入合計
  * - 支出合計
- * - 利息合計
+ * - 収支合計
  * @function
  * @param {Object.<number>} acc アカウントオブジェクト
  */
-/**
- * TODO:
- * - 利息合計の代わりに「収入－支出」の欄を設ける
- */
 const calcDisplaySummary = acc => {
-  // 利率
-  const intRatePercent = acc.interestRate / 100;
-
   // 収入合計
-  const incomes = acc.movements
-    .filter(mov => mov > 0)
-    .reduce((acc, cur) => acc + cur, 0);
+  const thisMonthIndex = acc.movementsDates
+    .map(dates => dates.startsWith('2020-12'))
+    .findIndex(el => el === true);
+
+  let thisMonthIncomes = 0;
+  if (thisMonthIndex >= 0) {
+    thisMonthIncomes += acc.movements
+      .slice(thisMonthIndex)
+      .filter(mov => mov > 0)
+      .reduce((acc, cur) => acc + cur, 0);
+  }
 
   // 支出合計
-  const outgoings = Math.abs(
-    acc.movements.filter(mov => mov < 0).reduce((acc, cur) => acc + cur, 0)
+  const thisMonthOutgoings = Math.abs(
+    acc.movements
+      .slice(thisMonthIndex)
+      .filter(mov => mov < 0)
+      .reduce((acc, cur) => acc + cur, 0)
   );
 
-  // 利息合計
-  const interests = acc.movements
-    .filter(mov => mov > 0)
-    .map(deposit => deposit * intRatePercent)
-    // １以上の値を返す
-    .filter(int => int >= 1)
-    .reduce((acc, cur) => acc + cur, 0);
+  // 収支
+  // 収入合計 - 支出合計
+  const thisMonthProfits = thisMonthIncomes - thisMonthOutgoings;
+
+  // 収支　プラスの場合はcolor黒　マイナスの場合はcolor赤
+  if (thisMonthProfits >= 0) {
+    labelSumInterest.style.color = 'blue';
+  } else {
+    labelSumInterest.style.color = '#f5465d';
+  }
 
   // Format value
-  const formattedInc = formatCur(incomes, acc.currency, acc.locale);
-  const formattedOut = formatCur(outgoings, acc.currency, acc.locale);
-  const formattedInt = formatCur(interests, acc.currency, acc.locale);
+  const formattedInc = formatCur(thisMonthIncomes, acc.currency, acc.locale);
+  const formattedOut = formatCur(thisMonthOutgoings, acc.currency, acc.locale);
+  const formattedPro = formatCur(thisMonthProfits, acc.currency, acc.locale);
 
   // 画面表示
   labelSumIn.textContent = `${formattedInc}`;
   labelSumOut.textContent = `${formattedOut}`;
-  labelSumInterest.textContent = `${formattedInt}`;
+  labelSumInterest.textContent = `${formattedPro}`;
 };
 
 /**
@@ -502,14 +509,6 @@ btnTransfer.addEventListener('click', e => {
   }
 });
 
-/**
- * TODO:
- * - 支出の入力
- * 備考の欄を新たに設ける
- * - 下記に変更あり
- * <input type="number" class="form__input form__input--outgo--amount" />
-  　<input type="text" class="form__input form__input--outgo--memo" />
- */
 // outgo
 btnLoan.addEventListener('click', e => {
   e.preventDefault();
