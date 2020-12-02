@@ -7,11 +7,9 @@ git merge remotename/branchname
 submit時にHTMLからscriptに値を渡すとき
 日本語で渡すと文字化けが生じたりプログラムに不具合が生じたりする可能性がある
 
-
-追加機能
-summary 今月分だけ計算する
-summary 収入-支出=収支
-右上のバランス　今年一年のトータル　残高
+todo
+■new Date()で自動的に今月の値を取得できるようにする
+■バックにAPIを作成してフロントと接続させる
 
 
 

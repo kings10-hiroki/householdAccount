@@ -245,9 +245,12 @@ const calcPrintBalance = acc => {
  * @param {Object.<number>} acc アカウントオブジェクト
  */
 const calcDisplaySummary = acc => {
+  // '2020-12'の形式で今月の値を取得
+  const nowMonth = new Date().toISOString().slice(0, 7);
+
   // 収入合計
   const thisMonthIndex = acc.movementsDates
-    .map(dates => dates.startsWith('2020-12'))
+    .map(dates => dates.startsWith(nowMonth))
     .findIndex(el => el === true);
 
   let thisMonthIncomes = 0;
@@ -339,6 +342,7 @@ const clearBlurInput = (inputEl, blurEl) => {
  * - 処理の内容がよくわからないから内容を把握する
  */
 const startLogOutTimer = () => {
+  let time = 120;
   const tick = () => {
     const min = String(Math.trunc(time / 60)).padStart(2, 0);
     const sec = String(time % 60).padStart(2, 0);
@@ -356,7 +360,6 @@ const startLogOutTimer = () => {
     }
     time--;
   };
-  let time = 120;
   tick();
   const timer = setInterval(tick, 1000);
   return timer;
@@ -454,6 +457,7 @@ btnLogin.addEventListener('click', e => {
     /**
      * TODO:
      * - よくわからないからもう一度動画をみる
+     * 一回timerを止めて再度最初から開始させる
      */
     if (timer) clearInterval(timer);
     timer = startLogOutTimer();
@@ -467,19 +471,26 @@ btnLogin.addEventListener('click', e => {
   }
 });
 
-// income
-btnTransfer.addEventListener('click', e => {
-  e.preventDefault();
-
+/**
+ * ユーザーによって入力されたデータをアカウントオブジェクトに挿入する処理です
+ * @function
+ * @param {Object.<number>||<string>} acc
+ * @param {string} inputAmount el
+ * @param {string} inputMemo el
+ * @param {boolean} positiveNegative income:true outgo:false
+ */
+const processInputDataInsertData = (
+  acc,
+  inputAmountEl,
+  inputMemoEl,
+  positiveNegative
+) => {
   // get inputValue 'Amount'
-  const inputAmount = Number(inputIncomeAmount.value);
-
-  // find recipient account from 'Transfer to' inputValue
-  // const recUser = accounts.find(acc => acc.username === inputTransferTo.value);
+  const inputAmount = Number(inputAmountEl.value);
 
   // get inputValue 'memo'
   // 'other'
-  let inputMemo = inputIncomeMemo.value;
+  let inputMemo = inputMemoEl.value;
 
   // 'other' -> 'その他' 変換
   inputMemo = convertSelectVal(inputMemo);
@@ -491,61 +502,38 @@ btnTransfer.addEventListener('click', e => {
     confirm(`金額:￥${inputAmount} memo:${inputMemo}でよろしいでしょうか？`)
   ) {
     // Add movement to current user
-    curUser.movements.push(inputAmount);
+    positiveNegative
+      ? acc.movements.push(inputAmount)
+      : acc.movements.push(-inputAmount);
 
     // Add memo to current user
-    curUser.memo.push(inputMemo);
+    acc.memo.push(inputMemo);
 
     // Add transfer date
-    curUser.movementsDates.push(new Date().toISOString());
+    acc.movementsDates.push(new Date().toISOString());
 
     // input clear & blur
-    clearBlurInput([inputIncomeAmount], [inputIncomeAmount]);
+    clearBlurInput([inputAmountEl], [inputAmountEl]);
 
     // update UI
-    updateUI(curUser);
+    updateUI(acc);
   } else {
     alert('Confirm your amount and memo!');
   }
+};
+
+// income
+btnTransfer.addEventListener('click', e => {
+  e.preventDefault();
+
+  processInputDataInsertData(curUser, inputIncomeAmount, inputIncomeMemo, true);
 });
 
 // outgo
 btnLoan.addEventListener('click', e => {
   e.preventDefault();
 
-  // get inputValue 'Amount'
-  const inputAmount = Number(inputOutgoAmount.value);
-
-  // get inputValue 'memo'
-  // 'other'
-  let inputMemo = inputOutgoMemo.value;
-
-  // 'other' -> 'その他' 変換
-  inputMemo = convertSelectVal(inputMemo);
-
-  // 入力されたusernameとamountの整合性の確認
-  if (
-    inputAmount > 0 &&
-    inputMemo &&
-    confirm(`金額:￥${inputAmount} memo:${inputMemo}でよろしいでしょうか？`)
-  ) {
-    // Add movement to current user
-    curUser.movements.push(-inputAmount);
-
-    // Add memo to current user
-    curUser.memo.push(inputMemo);
-
-    // Add loan date
-    curUser.movementsDates.push(new Date().toISOString());
-
-    // input clear & blur
-    clearBlurInput([inputOutgoAmount], [inputOutgoAmount]);
-
-    // update UI
-    updateUI(curUser);
-  } else {
-    alert('Confirm your amount and memo!');
-  }
+  processInputDataInsertData(curUser, inputOutgoAmount, inputOutgoMemo, false);
 });
 
 // close account
